@@ -44,10 +44,39 @@ const Calculator = () => {
     { value: "/", operator: true, operation: "append" },
   ];
 
-  const displayRef = useRef(null);
-  const fullCalculator = (operation: string) => {
-    
-    console.log(operation);
+  //   const displayRef = useRef(null);
+  const displayRef = useRef<HTMLInputElement | null>(null);
+
+  const fullCalculator = (operation: string, key: string) => {
+    switch (operation) {
+      case "append":
+        if (displayRef.current != null) {
+          if (displayRef.current.value == "Error") {
+            displayRef.current.value = "";
+          }
+          displayRef.current.value += key;
+        }
+        break;
+      case "calc":
+        if (displayRef.current != null) {
+          try {
+            displayRef.current.value =
+              displayRef.current.value != ""
+                ? eval(displayRef.current.value)
+                : "";
+          } catch (error) {
+            displayRef.current.value = "Error";
+          }
+        }
+        break;
+      case "clear":
+        if (displayRef.current != null) {
+          displayRef.current.value = "";
+        }
+        break;
+      default:
+        break;
+    }
   };
 
   return (
@@ -59,7 +88,7 @@ const Calculator = () => {
           return (
             <CalculatorButton
               onButtonClick={() => {
-                fullCalculator(key.operation);
+                fullCalculator(key.operation, key.value);
               }}
               operator={isNaN(Number(key.value))}
               key={key.value.toString()}
